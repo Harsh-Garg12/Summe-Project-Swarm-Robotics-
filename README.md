@@ -1,5 +1,4 @@
 # Summer-Project-Swarm-Robotics-
 Contain all the stuff done by me in this Summer project.
 
-In the Directory name " Search and Coverage " , which contain the file name " Intuitive Approach Team work.js "
-whose code is done by the Following teamates: Ashwani, Harsh, Ishaan, Shambhavi, Suhani
+The Codes of the Files present in the Directory name " Search and Coverage " was done by the Following teamates: Ashwani, Harsh, Ishaan, Shambhavi, Suhani
