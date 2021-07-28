@@ -1,6 +1,6 @@
-let canvas_size=400;
-let numrows=40;
-let numcol=40;
+let canvas_size=500;
+let numrows=50;
+let numcol=50;
 let width=canvas_size/numrows;
 let Bot=[];
 let numBots=10;
@@ -13,10 +13,7 @@ let flag=0;    //flag
 let numObs;
 let Obs=[];
 
-function fitnessFunc(x){
-   // return numrows*numcol*10/(numcol*numrows-numVisited+1);
-  return 1;
-}
+
 function velCalc(a,b){
   let updatedVel=[1000000000,10000000000];
   let VEL2=[];//vector storing velocity towards possible cells with minimum distance
@@ -24,8 +21,8 @@ function velCalc(a,b){
     for(let j=0;j<numcol;j++){
         if(pot[i][j]==-1&&abs(updatedVel[0])+abs(updatedVel[1])>abs(i-int(a/width))+abs(j-int(b/width))){
           VEL2=[]; 
-          updatedVel[0]=fitnessFunc(numVisited)*(i-int(a/width));
-           updatedVel[1]=fitnessFunc(numVisited)*(j-int(b/width));
+          updatedVel[0]=i-int(a/width);
+           updatedVel[1]=j-int(b/width);
            VEL2[0]=[];
            VEL2[0][0]=updatedVel[0];
            VEL2[0][1]=updatedVel[1];
@@ -53,14 +50,14 @@ function setup() {
     }
   
   }
-  numObs=int(random(4,8));
+  numObs=int(random(7,13));
   for(let i=0;i<numObs;i++){
     //Any Random position of each Obstacle in grid
-    x=int(random(2,4));
-    y=int(random(2,4));
+    x=int(random(2,5));
+    y=int(random(2,5));
     Obs[i]=[];
-    Obs[i][0]=int(random(0,canvas_size));
-    Obs[i][1]=int(random(0,canvas_size));
+    Obs[i][0]=int(random(30,canvas_size-60));
+    Obs[i][1]=int(random(30,canvas_size-60));
     pot[int(Obs[i][0]/width)][int(Obs[i][1]/width)]=10000;
     fill(0,0,0);
     //random size of obstacle
@@ -72,36 +69,49 @@ function setup() {
     }
   }
   numgoals=int(random(3,7));
-  
-  for(i=0;i<numgoals;i++){
+  let i=0;
+  while(i<numgoals){
     //Any Random position of each Goal in grid
-    x=int(random(0,canvas_size)); 
+    x=int(random(0,canvas_size));
     y=int(random(0,canvas_size));
     //for Goal colored with Blue
+    if(pot[(int)(x/width)][(int)(y/width)]==10000){
+      continue;
+    }
+    else {
     Goal[i]=[];
     Goal[i][0]=x;
     Goal[i][1]=y;
     Goal[i][2]=0; //kind of flag
+      i++;
     fill(0,0,255);
     rect(width*int(x/width),width*int(y/width),width,width);
+    }
   }
   
 
   /* For Bots, Bot[i][0]->Indicate x-coordinate of ith Bot
 Bot[i][1]->Indicate y-coordinate of jth Bot*/
-  
-  for(let i=0;i<numBots;i++){
+  i=0;
+  while(i<numBots){
   //Assigning Random Position to Bots , colored with Green/
+    x=int(random(0,canvas_size));
+    y=int(random(0,canvas_size));
+    if(pot[(int)(x/width)][(int)(y/width)]==10000){
+      continue;
+    }
+    else{
     Bot[i]=[];
     vel[i]=[];
     vel[i][0]=0;//taking initial velocity as zero
     vel[i][1]=0;// taking initial velocity as zero
-    Bot[i][0]=random(0,canvas_size);
-    Bot[i][1]=random(0,canvas_size);
+    Bot[i][0]=x;
+    Bot[i][1]=y;
     pot[int(Bot[i][0]/width)][int(Bot[i][1]/width)]=0;
-    
     fill(0,255,0);
 rect(width*int(Bot[i][0]/width),width*int(Bot[i][1]/width),width,width);
+      i++;
+    }
   }
   
 }
@@ -137,69 +147,10 @@ function draw(){
       }
      //check if there is an obstacle ahead
       if(f==0&&pot[int((Bot[i][0]+velx)/width)][int((Bot[i][1])/width)]==10000){
-        // if(pot[int(Bot[i][0]/width)+1][int(Bot[i][1]/width)]!=10000) Bot[i][0]=Bot[i][0]+width;
-        // else if(pot[int(Bot[i][0]/width)-1][int(Bot[i][1]/width)]!=10000) Bot[i][0]=Bot[i][0]-width;
-        // else if(pot[int(Bot[i][0]/width)][int(Bot[i][1]/width)+1]!=10000) Bot[i][1]=Bot[i][1]+width;
-        // else Bot[i][1]=Bot[i][1]-width;
-        VelUpd=[];
-        if(int(Bot[i][0]/width)+1<numrows&&pot[int(Bot[i][0]/width)+1][int(Bot[i][1]/width)]!=10000) 
-        {
-          let f=0;
-          for(let k=0;k<numBots;k++){
-        if(int((Bot[i][0])/width+1)==int(Bot[k][0]/width)&&int(Bot[i][1]/width)==int(Bot[k][1]/width)){
-             f=1;
-             break;
-           }
-      }
-          if(f==0){
-          VelUpd[VelUpd.length]=[];
-          VelUpd[VelUpd.length-1][0]=width;
-          VelUpd[VelUpd.length-1][1]=0;}
-        }  
-                                                                      
-        else if(int(Bot[i][0]/width)-1>=0&&pot[int(Bot[i][0]/width)-1][int(Bot[i][1]/width)]!=10000){
-          let f=0;
-          for(let k=0;k<numBots;k++){
-        if(int((Bot[i][0])/width-1)==int(Bot[k][0]/width)&&int(Bot[i][1]/width)==int(Bot[k][1]/width)){
-             f=1;
-             break;
-           }
-      }
-          if(f==0){
-          VelUpd[VelUpd.length]=[];
-          VelUpd[VelUpd.length-1][0]=-width;
-          VelUpd[VelUpd.length-1][1]=0;}
-        }
-        else if(int(Bot[i][1]/width)+1<numcol&&pot[int(Bot[i][0]/width)][int(Bot[i][1]/width)+1]!=10000) {
-          let f=0;
-          for(let k=0;k<numBots;k++){
-        if(int((Bot[i][1])/width+1)==int(Bot[k][1]/width)&&int(Bot[i][0]/width)==int(Bot[k][0]/width)){
-             f=1;
-             break;
-           }
-      }
-          if(f==0){
-          VelUpd[VelUpd.length]=[];
-          VelUpd[VelUpd.length-1][0]=0;
-          VelUpd[VelUpd.length-1][1]=width;}
-        }
-        else if(int((Bot[i][1])/width-1)>=0){
-          let f=0;
-          for(let k=0;k<numBots;k++){
-        if(int((Bot[i][1])/width-1)==int(Bot[k][1]/width)&&int(Bot[i][0]/width)==int(Bot[k][0]/width)){
-             f=1;
-             break;
-           }
-      }
-          if(f==0){
-          VelUpd[VelUpd.length]=[];
-          VelUpd[VelUpd.length-1][0]=0;
-          VelUpd[VelUpd.length-1][1]=-width;}
-        }
-        let p=int(random(0,VelUpd.length));
-        if(VelUpd.length>0){
-        Bot[i][0]+=VelUpd[p][0];
-        Bot[i][1]+=VelUpd[p][1];}
+        if(pot[int(Bot[i][0]/width)+1][int(Bot[i][1]/width)]!=10000) Bot[i][0]=Bot[i][0]+width;
+        else if(pot[int(Bot[i][0]/width)-1][int(Bot[i][1]/width)]!=10000) Bot[i][0]=Bot[i][0]-width;
+        else if(pot[int(Bot[i][0]/width)][int(Bot[i][1]/width)+1]!=10000) Bot[i][1]=Bot[i][1]+width;
+        else Bot[i][1]=Bot[i][1]-width;
       }
     
       else if(f==0){
@@ -218,69 +169,10 @@ function draw(){
       }
       //check if there is an obstacle ahead
       if(f==0&&pot[int((Bot[i][0])/width)][int((Bot[i][1]+vely)/width)]==10000){
-        // if(pot[int(Bot[i][0]/width)][int(Bot[i][1]/width)-1]!=10000) Bot[i][1]=Bot[i][1]-width;
-        // else if(pot[int(Bot[i][0]/width)][int(Bot[i][1]/width)+1]!=10000) Bot[i][1]=Bot[i][1]+width;
-        // else if(pot[int(Bot[i][0]/width)+1][int(Bot[i][1]/width)]!=10000) Bot[i][0]=Bot[i][1]+width;
-        // else Bot[i][0]=Bot[i][0]-width;
-        VelUpd=[];
-        if(int(Bot[i][0]/width)+1<numrows&&pot[int(Bot[i][0]/width)+1][int(Bot[i][1]/width)]!=10000) 
-        {
-          let f=0;
-          for(let k=0;k<numBots;k++){
-        if(int((Bot[i][0])/width+1)==int(Bot[k][0]/width)&&int(Bot[i][1]/width)==int(Bot[k][1]/width)){
-             f=1;
-             break;
-           }
-      }
-          if(f==0){
-          VelUpd[VelUpd.length]=[];
-          VelUpd[VelUpd.length-1][0]=width;
-          VelUpd[VelUpd.length-1][1]=0;}
-        }  
-                                                                      
-        else if(int(Bot[i][0]/width)-1>=0&&pot[int(Bot[i][0]/width)-1][int(Bot[i][1]/width)]!=10000){
-          let f=0;
-          for(let k=0;k<numBots;k++){
-        if(int((Bot[i][0])/width-1)==int(Bot[k][0]/width)&&int(Bot[i][1]/width)==int(Bot[k][1]/width)){
-             f=1;
-             break;
-           }
-      }
-          if(f==0){
-          VelUpd[VelUpd.length]=[];
-          VelUpd[VelUpd.length-1][0]=-width;
-          VelUpd[VelUpd.length-1][1]=0;}
-        }
-        else if(int(Bot[i][1]/width)+1<numcol&&pot[int(Bot[i][0]/width)][int(Bot[i][1]/width)+1]!=10000) {
-          let f=0;
-          for(let k=0;k<numBots;k++){
-        if(int((Bot[i][1])/width+1)==int(Bot[k][1]/width)&&int(Bot[i][0]/width)==int(Bot[k][0]/width)){
-             f=1;
-             break;
-           }
-      }
-          if(f==0){
-          VelUpd[VelUpd.length]=[];
-          VelUpd[VelUpd.length-1][0]=0;
-          VelUpd[VelUpd.length-1][1]=width;}
-        }
-        else if(int((Bot[i][1])/width-1)>=0) {
-          let f=0;
-          for(let k=0;k<numBots;k++){
-        if(int((Bot[i][1])/width-1)==int(Bot[k][1]/width)&&int(Bot[i][0]/width)==int(Bot[k][0]/width)){
-             f=1;
-             break;
-           }
-      }
-          if(f==0){
-          VelUpd[VelUpd.length]=[];
-          VelUpd[VelUpd.length-1][0]=0;
-          VelUpd[VelUpd.length-1][1]=-width;}
-        }
-        let p=int(random(0,VelUpd.length));
-        if(VelUpd.length>0){
-        Bot[i][0]+=VelUpd[p][0];
-        Bot[i][1]+=VelUpd[p][1];}
+        if(pot[int(Bot[i][0]/width)][int(Bot[i][1]/width)-1]!=10000) Bot[i][1]=Bot[i][1]-width;
+        else if(pot[int(Bot[i][0]/width)][int(Bot[i][1]/width)+1]!=10000) Bot[i][1]=Bot[i][1]+width;
+        else if(pot[int(Bot[i][0]/width)+1][int(Bot[i][1]/width)]!=10000) Bot[i][0]=Bot[i][1]+width;
+        else Bot[i][0]=Bot[i][0]-width;
       }
       
       else if(f==0){
@@ -302,6 +194,5 @@ function draw(){
     }
     
   }
-    // console.log("Hello");
-  frameRate(60);}
+  frameRate(20);}
 }
